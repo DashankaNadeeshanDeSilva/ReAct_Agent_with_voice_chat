@@ -1,0 +1,107 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+.chat-container {
+    width: 40%;
+    max-width: 500px;
+    height: 600px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#chat-box {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+}
+
+.message {
+    max-width: 75%;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    font-size: 14px;
+    word-wrap: break-word;
+    display: inline-block;
+}
+
+.user-message {
+    background: #dcf8c6;
+    align-self: flex-end;
+    text-align: right;
+    border-radius: 15px 15px 0 15px;
+}
+
+.ai-message {
+    background: #ebebeb;
+    align-self: flex-start;
+    text-align: left;
+    border-radius: 15px 15px 15px 0;
+}
+
+.input-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: #ffffff;
+}
+
+.mic-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: gray;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.mic-button.listening {
+    background-color: green;
+}
+
+.mic-button.sending {
+    background-color: red;
+}
+
+.mic-icon {
+    width: 40px;
+    height: 40px;
+    filter: invert(1);
+}
+
+.start-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.start-button:hover {
+    background-color: #45a049;
+}
