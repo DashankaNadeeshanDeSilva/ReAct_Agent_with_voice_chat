@@ -14,4 +14,4 @@ app.add_middleware(
 )
 
 # Include the router
-app.include_router(router, prefix="/api", tags=["ReAct Agent"])
+app.include_router(router, prefix="/agent", tags=["ReAct Agent"])

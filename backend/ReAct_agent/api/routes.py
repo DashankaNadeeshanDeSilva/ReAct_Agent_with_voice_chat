@@ -12,16 +12,17 @@ react_agent = build_agent_graph()
 
 class ChatInput(BaseModel):
     """Input data validation."""
-    message: str  # human message/query
+    user_message: str  # human message/query
     session_id: str  # session id
 
 
-@router.post("/chat")
+@router.post("/reply")
 async def chat(input: ChatInput):
+
     response = react_agent.invoke(
-        {"messages": [HumanMessage(content=input.message)]},
+        {"messages": [HumanMessage(content=input.user_message)]},
         config={"configurable": {"thread_id": input.session_id}}
     )
     final_response = response['messages'][-1].content
-    
+
     return {"response": final_response}
