@@ -1,0 +1,3 @@
+# Login service
+
+Handle user login with login page and user data database
