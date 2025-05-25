@@ -15,14 +15,13 @@ async function apiCall<T>(
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
         ...options.headers,
       },
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'API request failed');
+      throw new Error(error.detail || 'API request failed');
     }
 
     const data = await response.json();
@@ -37,35 +36,19 @@ export async function uploadDocument(file: File): Promise<ApiResponse<{ message:
   const formData = new FormData();
   formData.append('file', file);
 
-  return apiCall('/documents/upload', {
+  return apiCall('/upload_document', {
     method: 'POST',
     body: formData,
-    headers: {
-      // Remove Content-Type to let browser set it with boundary for FormData
-      'Content-Type': undefined,
-    },
   });
 }
 
-// Chat service
-export interface ChatMessage {
-  id: string;
-  text: string;
-  sender: 'user' | 'assistant';
-  timestamp: Date;
-}
-
-export interface ChatResponse {
-  message: string;
-  sources?: {
-    document: string;
-    relevance: number;
-  }[];
-}
-
-export async function sendChatMessage(message: string): Promise<ApiResponse<ChatResponse>> {
+// Chat message service
+export async function sendChatMessage(message: string): Promise<ApiResponse<{ response: string }>> {
   return apiCall('/chat', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ message }),
   });
 }
