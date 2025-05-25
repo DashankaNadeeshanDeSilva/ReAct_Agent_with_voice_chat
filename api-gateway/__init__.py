@@ -1,0 +1,1 @@
+# Api gateway initializes the FastAPI application and sets up the CORS middleware to allow requests from the frontend.
