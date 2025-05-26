@@ -30,12 +30,15 @@ class ChatInput(BaseModel):
 
 
 # Define the chat endpoint
-@app.post("/agent_respond")
+@app.post("/agent_respond/")
 async def chat(input: ChatInput):
     response = react_agent.invoke(
         {"messages": [HumanMessage(content=input.user_message)]},
         config={"configurable": {"thread_id": input.session_id}}
     )
     final_response = response['messages'][-1].content
+
+    for msgs in response['messages']:
+        msgs.pretty_print()
 
     return {"response": final_response}
