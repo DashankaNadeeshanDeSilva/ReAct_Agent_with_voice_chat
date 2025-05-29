@@ -5,7 +5,10 @@ from api_gateway.services.index_document import index_document
 from pydantic import BaseModel
 import os
 import httpx
+from dotenv import load_dotenv
 
+load_dotenv() # Load the .env file
+DEFAULT_AGENT_URL = os.getenv("AGENT_SERVICE_URL")
 DEFAULT_AGENT_URL = "http://127.0.0.1:8002/agent_respond/" # Update to internal Docker network or API Gateway config later
 
 class Chat(BaseModel):

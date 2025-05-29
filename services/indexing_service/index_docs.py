@@ -5,7 +5,6 @@ from langchain.schema import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_pinecone import PineconeVectorStore
 from dotenv import load_dotenv
-#from langchain.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import PyPDFLoader 
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -17,19 +16,17 @@ Workflow:
 3. Index the Documents
 """
 
-
 # get environment variables
 load_dotenv()
-#os.environ["PINECONE_API_KEY"] = os.getenv("PINECONE_API_KEY")
 EMBDDING_MODEL_DIM = 384 # dimension of the embeddings from https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 
 def index_docs(documents: list[Document]):
     ## Initilize and setup Pinecone
     
-    #index_name = os.getenv("PINECONE_INDEX_NAME")
-    index_name = "kifrag-knowledge-base"
-    #pinecone_api_key = os.getenv("PINECONE_API_KEY")
-    pinecone_api_key = "pcsk_6vvBn6_HSv8eEXBkCPs63reaGPUag5dAaYYT9WKZ9DvZWk1AHUMGgG3DBC8DV6STdiNG6U"
+    index_name = os.getenv("PINECONE_INDEX_NAME")
+    #index_name = "kifrag-knowledge-base"
+    pinecone_api_key = os.getenv("PINECONE_API_KEY")
+    #pinecone_api_key = "pcsk_6vvBn6_HSv8eEXBkCPs63reaGPUag5dAaYYT9WKZ9DvZWk1AHUMGgG3DBC8DV6STdiNG6U"
     
     if not pinecone_api_key or not index_name:
         raise EnvironmentError("Missing PINECONE_API_KEY or PINECONE_INDEX_NAME in environment variables.")
@@ -60,10 +57,7 @@ def index_docs(documents: list[Document]):
 
     ## Index documents
     added_docs = vector_store.add_documents(docs)
-    print(f"Indexed {len(added_docs)} documents to Pinecone index {index_name}")
-    print()
-    print("OK")
-    print()
+
     return added_docs # return list of indexed documents
 
 if __name__ == "__main__":

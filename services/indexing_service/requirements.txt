@@ -1,0 +1,12 @@
+# =============================
+# requirements.txt for indexing_service
+# Location: KIFrag/indexing_service/requirements.txt
+# Description: Python dependencies for the Indexing Service (FastAPI app for document indexing and vector storage)
+# =============================
+fastapi
+uvicorn
+langchain
+langgraph
+python-dotenv
+pinecone-client
+sentence-transformers

@@ -1,11 +1,15 @@
 import aiohttp
 from fastapi import UploadFile
 from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
+import os
 
-INDEXING_SERVICE_URL = "http://127.0.0.1:8000/index_document/"  # Update to internal Docker network or API Gateway config later
+load_dotenv() # Load the .env file
+INDEXING_SERVICE_URL = os.getenv("INDEXING_SERVICE_URL")
+INDEXING_SERVICE_URL = "http://127.0.0.1:8002/index_document/"  # Update to internal Docker network or API Gateway config later
 
 
-# Index documnet service
+# Index document service
 async def index_document(file: UploadFile):
     try:
         async with aiohttp.ClientSession() as session:

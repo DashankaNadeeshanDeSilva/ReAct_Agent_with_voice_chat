@@ -3,8 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from api_gateway.services.index_document import index_document
 from api_gateway.services.agent_chat_service import get_response, Chat
-from pydantic import BaseModel
-import os
 
 app = FastAPI(title="API Gateway")
 

@@ -1,0 +1,11 @@
+# =============================
+# requirements.txt for api_gateway
+# Location: KIFrag/api_gateway/requirements.txt
+# Description: Python dependencies for the API Gateway service (FastAPI app for routing and API aggregation)
+# =============================
+fastapi
+uvicorn
+python-dotenv
+httpx
+pydantic
+aiohttp

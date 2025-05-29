@@ -4,7 +4,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from agent.state import AgentState
 from agent.agent import agent
-from agent.tools import TOOLS
+from agent.tools import agent_tools
 
 
 # Condition function
@@ -18,14 +18,15 @@ def should_continue(state: AgentState) -> str:
         return "tools"
     return "end"
 
+
 def build_agent_graph():
-    """Build the agent graph."""
+    """Build the ReAct agent graph."""
     # Define Graph
     workflow_graph = StateGraph(AgentState)
 
     # Add nodes
     workflow_graph.add_node("agent", agent)
-    workflow_graph.add_node("tools", ToolNode(TOOLS))
+    workflow_graph.add_node("tools", ToolNode(agent_tools))
 
     # Add edges
     workflow_graph.add_edge(START, "agent")
@@ -38,7 +39,7 @@ def build_agent_graph():
                                     )
     workflow_graph.add_edge("tools", "agent")
 
-    # complie the graph
+    # compile the graph
     memory = MemorySaver() # Session memory
     react_agent = workflow_graph.compile(checkpointer=memory)
 

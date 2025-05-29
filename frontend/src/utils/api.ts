@@ -43,12 +43,22 @@ export async function uploadDocument(file: File): Promise<ApiResponse<{ message:
 }
 
 // Chat message service
+export interface ChatMessage {
+  id: string;
+  text: string;
+  sender: 'user' | 'assistant';
+  timestamp: Date;
+}
+
 export async function sendChatMessage(message: string): Promise<ApiResponse<{ response: string }>> {
-  return apiCall('/chat', {
+  return apiCall('/chat_with_agent', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ 
+      user_message: message,
+      session_id: "123456" // Example session ID, replace with actual session management 
+    }),
   });
 }

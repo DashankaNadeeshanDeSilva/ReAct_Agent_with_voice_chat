@@ -1,1 +1,1 @@
-# initiate Agent servce package
+# Initialize the agent service
