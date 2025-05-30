@@ -1,4 +1,4 @@
-# KIFrag: Conversational AI Knowledge Assistant
+# KIFrag: Conversational Agentic AI Assistant
 
 ## Overview
 
