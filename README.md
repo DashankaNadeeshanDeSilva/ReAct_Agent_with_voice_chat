@@ -1,90 +1,164 @@
-# KIFrag: Conversational AI Agent to query from the knowledge base
+# KIFrag: Conversational AI Knowledge Assistant
 
-## Project:
-**KIFarg**: Conversational AI assistant to ask anything from organizational knowledge base with propiatory and open source data. A modular, full-stack AI-powered chat agent featuring Retrieval-Augmented Generation (RAG).  
-This project is organized as a microservices architecture with a frontend, API gateway, agent service, and supporting services.
+## Overview
 
-### Project idea: 
-Conversational AI agentic assistant that semantically searches and retrieves knowledge from internal & proprietary (knowledge base) and external (web search) content.
+**KIFrag** is a Conversational AI assistant designed to enable users to semantically search and retrieve knowledge from both internal proprietary knowledge bases and external web sources. The system leverages advanced LLMs, vector databases, and modern web technologies to provide a seamless chat interface for research-intensive workflows.This project is organized as a microservices architecture with multiple core services.
 
-### Client/audience: 
-Users are employees who are  involved in research-intensive activities in their daily workflow.
 
-### User interaction:
-Users interact with the agentic assistant via a chat interface
+---
 
-## Features
+## Table of Contents
 
-- **Retrieval-Augmented Generation (RAG)** for improved contextual responses
-- Microservices-based architecture for scalability and maintainability
-- REST API Gateway for unified access to services
-- Modular, extensible codebase
-- Modern frontend for chat interactions
+- [Project Objectives](#project-objectives)
+- [System Architecture](#system-architecture)
+- [Microservices](#microservices)
+  - [Agent Service](#agent-service)
+  - [API Gateway](#api-gateway)
+  - [Indexing Service](#indexing-service)
+  - [Frontend](#frontend)
+- [Deployment](#deployment)
+- [Environment Variables](#environment-variables)
+- [Development & Contribution](#development--contribution)
+- [License](#license)
+- [References](#references)
 
-## Project Structure
+---
 
-```
-.
-├── agent service      # Core RAG agent logic and orchestration
-├── api-gateway        # API gateway exposing unified REST endpoints
-├── frontend           # Web UI for chat and management
-├── services           # Supporting services (data, retrieval, etc.)
-├── .gitignore
-├── LICENSE
-└── README.md
-```
+## Project Objectives
 
-## Getting Started
+- **Semantic Knowledge Retrieval:** Enable users to query and retrieve information from internal documents, research papers, reports, and technical manuals using natural language.
+- **Web Search Integration:** Augment internal knowledge with relevant information from the web.
+- **Document Management:** Allow users and admins to upload, index, and manage documents in the knowledge base.
+- **Scalable Microservices Architecture:** Ensure each component is independently deployable and maintainable.
+- **Production-Ready Deployment:** Containerized services for cloud deployment and CI/CD integration.
 
-### Prerequisites
+---
 
-- Node.js, npm/yarn (for frontend and possibly gateway)
-- Python (for agent and certain services, if applicable)
-- Docker (optional, for containerized deployment)
+## System Architecture
 
-### Installation
+The KIFrag system follows a microservices architecture, with each main component running as an independent service. The architecture ensures scalability, maintainability, and ease of deployment.
+
+**Main Components:**
+- **Frontend:** Interactive chat interface for users.
+- **API Gateway:** Routes requests between frontend and backend services.
+- **Agent Service:** Core AI logic, orchestrating LLMs and tools for knowledge retrieval and web search.
+- **Indexing Service:** Handles document ingestion and indexing into the vector database.
+- **Vector Database:** (e.g., Pinecone) Stores document embeddings for semantic search.
+
+> **See:** [`documentation/Chat Application System Architetcure Design.pdf`](documentation/Chat Application System Architetcure Design.pdf) for a detailed system diagram.
+
+---
+
+## Microservices
+
+### 1. Agent Service
+
+- **Description:** Hosts the core ReAct agent, connects to LLM APIs, and provides tools for knowledge retrieval (RAG) and web search.
+- **Tech Stack:** FastAPI, LangChain, LangGraph, Python
+- **Key Features:**
+  - Semantic search via vector DB
+  - Web search integration
+  - LLM orchestration
+
+### 2. API Gateway
+
+- **Description:** Central entry point for all client requests, routing them to the appropriate backend service.
+- **Tech Stack:** FastAPI, Python, Aiohttp
+- **Key Features:**
+  - Request/response routing
+  - Service discovery and orchestration
+
+### 3. Indexing Service
+
+- **Description:** Handles document uploads and indexes them into the vector database for semantic retrieval.
+- **Tech Stack:** FastAPI, LangChain, Pinecone, Python
+- **Key Features:**
+  - Document ingestion
+  - Embedding generation
+  - Vector DB indexing
+
+### 4. Frontend
+
+- **Description:** JavaScript-based chat interface for user interaction and document management.
+- **Tech Stack:** JavaScript, Vite, HTML, CSS
+- **Key Features:**
+  - Real-time chat with AI agent
+  - Document upload and management
+
+---
+
+## Deployment
+
+All services are containerized using Docker. The system can be orchestrated using `docker-compose` for local development or deployed to the cloud via CI/CD pipelines (Jenkins, GitHub Actions).
+
+### Quick Start (Development)
 
 1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/DashankaNadeeshanDeSilva/KIFrag_RAG_Chat_Agent.git
-   cd KIFrag_RAG_Chat_Agent
-   ```
+    ```bash
+    git clone https://github.com/your-org/KIFrag.git
+    cd KIFrag
+    ```
 
-2. **Setup each service:**
-   - Follow the instructions in each subdirectory (`agent service`, `api-gateway`, `frontend`, `services`) for dependencies and setup.
+2. **Set up environment variables:**
+    - Copy `.env.example` to `.env` in each service directory and fill in required values.
 
-3. **Run the system:**
-   - You may use Docker Compose or run services individually as per their documentation.
+3. **Build and run all services:**
+    ```bash
+    docker-compose up --build
+    ```
 
-### Example (API Gateway):
+4. **Access the frontend:**
+    - Visit [http://localhost:5173](http://localhost:5173) (or the port specified in your frontend Dockerfile).
 
-```sh
-cd api-gateway
-npm install
-npm start
+---
+
+## Environment Variables
+
+Each microservice requires its own `.env` file with relevant configuration. **Do not commit sensitive keys to version control.**
+
+**Example for `agent_service/.env`:**
+```
+OPENROUTER_API_KEY=your-openrouter-key
+AGENT_SERVICE_URL=http://agent_service:8001/agent/reply
 ```
 
-### Example (Frontend):
-
-```sh
-cd frontend
-npm install
-npm run dev
+**Example for `indexing_service/.env`:**
+```
+PINECONE_API_KEY=your-pinecone-key
+PINECONE_INDEX_NAME=kifrag-knowledge-base
 ```
 
-## Usage
+**Example for `api_gateway/.env`:**
+```
+INDEXING_SERVICE_URL=http://indexing_service:8002/index_document/
+```
 
-- Open the frontend in your browser to interact with the chat agent.
-- Use the API gateway endpoints to integrate with other applications or services.
+---
 
-## Contributing
+## Development & Contribution
 
-Pull requests are welcome! For major changes, please open an issue first to discuss your proposed changes.
+1. Fork the repository and create your feature branch.
+2. Commit your changes and open a pull request.
+3. Ensure all new code is covered by unit tests.
+4. Follow the code style and contribution guidelines.
+
+---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Contact
+---
 
-Maintainer: [Dashanka Nadeeshan De Silva](https://github.com/DashankaNadeeshanDeSilva)
+## References
+
+- [LangChain Documentation](https://python.langchain.com/)
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [Pinecone Documentation](https://docs.pinecone.io/)
+- [Vite Documentation](https://vitejs.dev/)
+- [System Architecture Diagram](documentation/Chat Application System Architetcure Design.pdf)
+
+---
+
+**Contact:**  
+For questions or support, please open an issue or contact the maintainers.
