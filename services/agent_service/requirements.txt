@@ -8,3 +8,10 @@ uvicorn
 langchain
 langgraph
 python-dotenv
+langchain_community
+pinecone
+pinecone-client
+langchain_pinecone
+langchain_huggingface
+langchain-together
+duckduckgo-search

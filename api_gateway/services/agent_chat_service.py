@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import APIRouter, File, UploadFile, HTTPException
-from api_gateway.services.index_document import index_document
 from pydantic import BaseModel
 import os
 import httpx
@@ -9,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv() # Load the .env file
 DEFAULT_AGENT_URL = os.getenv("AGENT_SERVICE_URL")
-DEFAULT_AGENT_URL = "http://127.0.0.1:8002/agent_respond/" # Update to internal Docker network or API Gateway config later
+#DEFAULT_AGENT_URL = "http://127.0.0.1:8002/agent_respond/" # Update to internal Docker network or API Gateway config later
 
 class Chat(BaseModel):
     user_message: str
@@ -18,6 +17,9 @@ class Chat(BaseModel):
 async def get_response(chat: Chat):
     # agent_url = os.getenv("AGENT_SERVICE_URL", DEFAULT_AGENT_URL)
     agent_url = DEFAULT_AGENT_URL
+
+    if not DEFAULT_AGENT_URL or not DEFAULT_AGENT_URL.startswith("http"):
+        raise ValueError(f"Invalid AGENT_SERVICE_URL: {DEFAULT_AGENT_URL}")
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:

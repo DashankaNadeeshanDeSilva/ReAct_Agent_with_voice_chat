@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import APIRouter, File, UploadFile, HTTPException
-from api_gateway.services.index_document import index_document
-from api_gateway.services.agent_chat_service import get_response, Chat
+from services.index_document import index_document
+from services.agent_chat_service import get_response, Chat
 
 app = FastAPI(title="API Gateway")
 
@@ -46,5 +46,5 @@ async def chat_with_agent(chat: Chat):
         response = await get_response(chat)
         return response
     except HTTPException as e:
-        raise HTTPException(status_code=response.status_code, 
-                            detail=f"An error occurred while processing the chat request: {str(e)}") 
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+                            #detail=f"An error occurred while processing the chat request: {str(e)}") 

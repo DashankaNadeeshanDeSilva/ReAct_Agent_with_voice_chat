@@ -6,7 +6,7 @@ import os
 
 load_dotenv() # Load the .env file
 INDEXING_SERVICE_URL = os.getenv("INDEXING_SERVICE_URL")
-INDEXING_SERVICE_URL = "http://127.0.0.1:8002/index_document/"  # Update to internal Docker network or API Gateway config later
+#INDEXING_SERVICE_URL = "http://127.0.0.1:8002/index_document/"  # Update to internal Docker network or API Gateway config later
 
 
 # Index document service

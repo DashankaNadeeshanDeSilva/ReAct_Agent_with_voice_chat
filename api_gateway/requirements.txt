@@ -9,3 +9,5 @@ python-dotenv
 httpx
 pydantic
 aiohttp
+python-multipart
+langchain_pinecone

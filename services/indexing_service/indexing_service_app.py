@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
-from indexing_service.load_docs import load_document
-from indexing_service.index_docs import index_docs
+from load_docs import load_document
+from index_docs import index_docs
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()

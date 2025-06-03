@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./api_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - agent-service
+      - indexing-service
+    environment:
+      - AGENT_SERVICE_URL=http://agent-service:8001/agent_respond/ # http://agent-service:8001/agent_respond/
+      - INDEXING_SERVICE_URL= http://indexing-service:8002/index_document/
+
+  agent-service:
+    build: ./agent_service
+    ports:
+      - "8001:8001"
+    
+  indexing-service:
+    build: ./indexing_service
+    ports:
+      - "8002:8002"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4173:4173"
+    depends_on:
+      - api-gateway
+    environment:
+      - VITE_API_GATEWAY_URL=http://api-gateway:8000

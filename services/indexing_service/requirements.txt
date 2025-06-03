@@ -7,6 +7,12 @@ fastapi
 uvicorn
 langchain
 langgraph
+langchain-community
 python-dotenv
+pinecone
 pinecone-client
+langchain_pinecone
 sentence-transformers
+langchain_huggingface
+python-multipart
+pypdf
