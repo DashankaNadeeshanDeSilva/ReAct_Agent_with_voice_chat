@@ -1,5 +1,7 @@
 # KIFrag: Conversational Agentic AI Assistant
 
+### Under Construction :construction:
+
 ## Overview
 
 **KIFrag** is a Conversational AI assistant designed to enable users to semantically search and retrieve knowledge from both internal proprietary knowledge bases and external web sources. The system leverages advanced LLMs, vector databases, and modern web technologies to provide a seamless chat interface for research-intensive workflows.This project is organized as a microservices architecture with multiple core services.
