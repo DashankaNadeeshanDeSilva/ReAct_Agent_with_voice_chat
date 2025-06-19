@@ -116,7 +116,7 @@ All services are containerized using Docker. The system can be orchestrated usin
     - Visit [http://localhost:5173](http://localhost:5173) (or the port specified in your frontend Dockerfile).
 
 ### Cloud Deployment
-Each microservice is containerised (with Docker) and can be run in a cloud environment. Complete deployment is run via CI/CD pipeline with Jenkins (for internal servers) or Github actions to deploy to production in AWS or Azure cloud env.
+Each microservice is containerised (with Docker) and can be run in a cloud environment. Complete deployment is run via CI/CD pipeline with Jenkins (for internal servers) or Github actions to deploy to production in AWS or Azure cloud env using CI/CD configuration YAML [file](.github/workflows)
 
 ---
 
