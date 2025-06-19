@@ -34,6 +34,10 @@
 - **Scalable Microservices Architecture:** Ensure each component is independently deployable and maintainable.
 - **Production-Ready Deployment:** Containerized services for cloud deployment and CI/CD integration.
 
+### Impact: 
+
+Reduce research time and help users to find more contextually and semantically relevant and rich knowledge and content with less efforts compared to manual reading and researching.
+
 ---
 
 ## System Architecture
