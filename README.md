@@ -1,7 +1,5 @@
 # KIFrag: Conversational Agentic AI Assistant
 
-### Under Construction :construction:
-
 ## Overview
 
 **KIFrag** is a Conversational AI assistant designed to enable users to semantically search and retrieve knowledge from both internal proprietary knowledge bases and external web sources. The system leverages advanced LLMs, vector databases, and modern web technologies to provide a seamless chat interface for research-intensive workflows. This project is organised as a microservices architecture with multiple core services.
@@ -41,6 +39,10 @@ Reduce research time and help users to find more contextually and semantically r
 
 ## System Architecture
 
+![System_design_overview](assets/System_design_overview.jpg)
+
+[Detailed system architecture](assets/detailed_system_architetcure.pdf)
+
 The KIFrag system follows a microservices architecture, with each main component running as an independent service. The architecture ensures scalability, maintainability, and ease of deployment.
 
 **Main Components:**
@@ -49,8 +51,6 @@ The KIFrag system follows a microservices architecture, with each main component
 - **Agent Service:** Core AI logic, orchestrating LLMs and tools for knowledge retrieval and web search.
 - **Indexing Service:** Handles document ingestion and indexing into the vector database.
 - **Vector Database:** (e.g., Pinecone) Stores document embeddings for semantic search.
-
-> **See:** [`documentation/Chat Application System Architetcure Design.pdf`](documentation/Chat Application System Architetcure Design.pdf) for a detailed system diagram.
 
 ---
 
