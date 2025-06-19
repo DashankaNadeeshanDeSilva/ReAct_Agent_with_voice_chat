@@ -40,7 +40,8 @@ def build_agent_graph():
     workflow_graph.add_edge("tools", "agent")
 
     # compile the graph
-    memory = MemorySaver() # Session memory
+    memory = MemorySaver() # Session memory short-term memory
+    # This will save the state of the agent in memory
     react_agent = workflow_graph.compile(checkpointer=memory)
 
     return react_agent

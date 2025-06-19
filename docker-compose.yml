@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   api-gateway:
-    build: ./services/api_gateway
+    build: ./api_gateway
     ports:
       - "8000:8000"
     depends_on:
@@ -13,7 +13,7 @@ services:
       - INDEXING_SERVICE_URL= http://indexing-service:8002/index_document/
 
   agent-service:
-    build: ./services/agent_service
+    build: ./agent_service
     ports:
       - "8001:8001"
     
