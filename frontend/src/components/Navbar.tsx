@@ -23,7 +23,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
             <BookOpen className="h-6 w-6 text-blue-600" />
-            <span className="font-semibold text-lg text-gray-900">RAG Chat</span>
+            <span className="font-semibold text-lg text-gray-900">Agentic RAG Chatbot</span>
           </Link>
           <div className="flex space-x-4">
             <Link 

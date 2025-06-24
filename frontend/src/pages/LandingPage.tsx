@@ -8,10 +8,10 @@ const LandingPage: React.FC = () => {
       {/* Hero Section */}
       <section className="text-center space-y-6 max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-          Your <span className="text-blue-600">Smart</span> Document Assistant
+          Your <span className="text-blue-600">Smart</span> Document Assistant <span className="text-blue-600">Agent</span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Upload your documents and chat with them. Get instant, accurate answers based on your own content.
+          Upload your documents and chat with Agentic RAG to get instant, accurate answers based on your own content.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
           <Link 
