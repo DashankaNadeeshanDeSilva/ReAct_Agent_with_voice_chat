@@ -4,7 +4,7 @@
 
 ## Overview
 
-**KIFrag** is a Conversational AI assistant (AGentic RAG chatbot) designed to enable users to semantically search and retrieve knowledge from both internal proprietary knowledge bases and external web sources. The system leverages advanced LLMs, vector databases, and modern web technologies to provide a seamless chat interface for research-intensive workflows. This project is organised as a microservices architecture with multiple core services.
+**KIFrag** is a Conversational AI assistant (Agentic RAG chatbot) designed to enable users to semantically search and retrieve knowledge from both internal proprietary knowledge bases and external web sources. The system leverages advanced LLMs, vector databases, and modern web technologies to provide a seamless chat interface for research-intensive workflows. This project is organised as a microservices architecture with multiple core services.
 
 
 ---
