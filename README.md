@@ -1,7 +1,5 @@
 # KIFrag: Conversational AI Agent Assistant
 
-![KIFrag Assistant](assets/user_agent.png)
-
 [![Build Status](https://github.com/your-org/kifrag-deploy/workflows/KIFrag%20CI%2FCD%20Pipeline/badge.svg)](https://github.com/your-org/kifrag-deploy/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Production%20Ready-blue.svg)](https://docker.com/)
