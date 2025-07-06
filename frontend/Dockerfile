@@ -1,5 +1,5 @@
-# Use an official Node.js runtime as a parent image
-FROM node:20-alpine
+# Stage 1: Build the application
+FROM node:20-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with exact versions for reproducible builds
+RUN npm ci
 
 # Copy the rest of the application code
 COPY . .
@@ -16,8 +16,21 @@ COPY . .
 # Build the app for production
 RUN npm run build
 
-# Expose the port the app runs on (default Vite preview port)
-EXPOSE 4173
+# Stage 2: Serve the built app with Nginx
+FROM nginx:stable-alpine
 
-# Start the app using Vite preview
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]
+# Copy built assets from the builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80 (or 4173 for defualt Vite server)
+EXPOSE 80 
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:80/ || exit 1
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
