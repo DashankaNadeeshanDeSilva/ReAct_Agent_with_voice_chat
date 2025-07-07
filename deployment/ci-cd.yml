@@ -4,10 +4,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - staging
+      - main
   pull_request:
     branches:
-      - staging
+      - main
 
 jobs:
   build_and_test:

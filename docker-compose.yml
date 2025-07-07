@@ -9,24 +9,93 @@ services:
       - agent-service
       - indexing-service
     environment:
-      - AGENT_SERVICE_URL=http://agent-service:8001/agent_respond/ # http://agent-service:8001/agent_respond/
-      - INDEXING_SERVICE_URL= http://indexing-service:8002/index_document/
+      - AGENT_SERVICE_URL=http://agent-service:8001/agent_respond/
+      - INDEXING_SERVICE_URL=http://indexing-service:8002/index_document/
+      - ENVIRONMENT=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   agent-service:
-    build: ./agent_service
+    build: 
+      context: ./agent_service
+      dockerfile: Dockerfile
+    image: kifrag/agent-service:${TAG:-latest}
+    restart: unless-stopped
     ports:
       - "8001:8001"
+    environment:
+      - ENVIRONMENT=production
+    env_file:
+      - ./agent_service/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     
   indexing-service:
-    build: ./indexing_service
+    build: 
+      context: ./indexing_service
+      dockerfile: Dockerfile
+    image: kifrag/indexing-service:${TAG:-latest}
+    restart: unless-stopped
     ports:
       - "8002:8002"
+    environment:
+      - ENVIRONMENT=production
+    env_file:
+      - ./indexing_service/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: kifrag/frontend:${TAG:-latest}
+    restart: unless-stopped
     ports:
-      - "4173:4173"
+      - "80:80" # expose 4173 for default Vite server
     depends_on:
       - api-gateway
     environment:
       - VITE_API_GATEWAY_URL=http://api-gateway:8000
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  default:
+    name: kifrag_network

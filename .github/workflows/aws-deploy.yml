@@ -1,0 +1,195 @@
+name: KIFrag CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+env:
+  AWS_REGION: us-east-1 # Change to your AWS region
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code # download the repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      # run tests for agent service
+      - name: Install dependencies for Agent Service
+        run: |
+          cd agent_service
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+      
+      - name: Run tests for Agent Service
+        run: |
+          cd agent_service
+          pytest --cov=./ --cov-report=xml
+      
+      # run tests for api gateway
+      - name: Install dependencies for API Gateway
+        run: |
+          cd api_gateway
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+      
+      - name: Run tests for API Gateway
+        run: |
+          cd api_gateway
+          pytest --cov=./ --cov-report=xml
+      
+      # run tests for indexing service
+      - name: Install dependencies for Indexing Service
+        run: |
+          cd indexing_service
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run tests for Indexing Service
+        run: |
+          cd indexing_service
+          pytest --cov=./ --cov-report=xml
+
+  build:
+    name: Build and Push Docker Images # to AWS ECR
+    needs: test # Only runs if tests pass !
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      
+      - name: Set version tag
+        id: vars
+        run: echo "TAG=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+      
+      # Build and push agent-service
+      - name: Build and push agent-service
+        uses: docker/build-push-action@v3
+        with:
+          context: ./agent_service
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/kifrag-agent-service:${{ env.TAG }},${{ steps.login-ecr.outputs.registry }}/kifrag-agent-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      # Build and push api-gateway
+      - name: Build and push api-gateway
+        uses: docker/build-push-action@v3
+        with:
+          context: ./api_gateway
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/kifrag-api-gateway:${{ env.TAG }},${{ steps.login-ecr.outputs.registry }}/kifrag-api-gateway:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      # Build and push indexing-service
+      - name: Build and push indexing-service
+        uses: docker/build-push-action@v3
+        with:
+          context: ./indexing_service
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/kifrag-indexing-service:${{ env.TAG }},${{ steps.login-ecr.outputs.registry }}/kifrag-indexing-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      # Build and push frontend
+      - name: Build and push frontend
+        uses: docker/build-push-action@v3
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/kifrag-frontend:${{ env.TAG }},${{ steps.login-ecr.outputs.registry }}/kifrag-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to AWS ECS
+    needs: build # Only runs if build succeeds !
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def-update
+        run: |
+          # Get deployment environment (default to 'dev' if not provided)
+          DEPLOY_ENV=${{ github.event.inputs.environment || 'dev' }}
+          
+          # Set version tag (Every deployment gets a unique tag (like 'abc1234') so you can track exactly which code version is running.)
+          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
+          
+          # Update ECS task definitions with new image tags
+          aws ecs update-service --cluster kifrag-$DEPLOY_ENV-cluster --service kifrag-api-gateway-service --force-new-deployment
+          aws ecs update-service --cluster kifrag-$DEPLOY_ENV-cluster --service kifrag-agent-service --force-new-deployment
+          aws ecs update-service --cluster kifrag-$DEPLOY_ENV-cluster --service kifrag-indexing-service --force-new-deployment
+          aws ecs update-service --cluster kifrag-$DEPLOY_ENV-cluster --service kifrag-frontend-service --force-new-deployment
+      
+      - name: Wait for services to stabilize
+        run: |
+          DEPLOY_ENV=${{ github.event.inputs.environment || 'dev' }}
+          
+          aws ecs wait services-stable --cluster kifrag-$DEPLOY_ENV-cluster --services kifrag-api-gateway-service kifrag-agent-service kifrag-indexing-service kifrag-frontend-service
+
+  notify:
+    name: Notification
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Deployment Status
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'deployments'
+          slack-message: |
+            Deployment Status: ${{ needs.deploy.result == 'success' && '✅ Success' || '❌ Failed' }}
+            Environment: ${{ github.event.inputs.environment || 'dev' }}
+            Commit: ${{ github.event.head_commit.message }}
+            See details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
