@@ -1,0 +1,88 @@
+# .github/workflows/ci-cd.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:5
+        ports: ['27017:27017']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install backend deps
+        working-directory: ./backend
+        run: pip install -r requirements.txt
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: pytest --maxfail=1 --disable-warnings -q
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install frontend deps
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test -- --watchAll=false
+
+  docker_build_and_push:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push all services
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/kifrag-backend:latest -f backend/Dockerfile ./backend
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/kifrag-backend:latest
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/kifrag-frontend:latest -f frontend/Dockerfile ./frontend
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/kifrag-frontend:latest
+
+  deploy_production:
+    needs: docker_build_and_push
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ secrets.PRODUCTION_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to production (SSH)
+        uses: appleboy/ssh-action@v0.1.11
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/kifrag-backend:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/kifrag-frontend:latest
+            docker-compose -f /opt/kifrag/docker-compose.prod.yml up -d --no-deps --build
