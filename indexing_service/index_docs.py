@@ -24,9 +24,7 @@ def index_docs(documents: list[Document]):
     ## Initilize and setup Pinecone
     
     index_name = os.getenv("PINECONE_INDEX_NAME")
-    #index_name = "kifrag-knowledge-base"
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
-    #pinecone_api_key = "pcsk_6vvBn6_HSv8eEXBkCPs63reaGPUag5dAaYYT9WKZ9DvZWk1AHUMGgG3DBC8DV6STdiNG6U"
     
     if not pinecone_api_key or not index_name:
         raise EnvironmentError("Missing PINECONE_API_KEY or PINECONE_INDEX_NAME in environment variables.")
